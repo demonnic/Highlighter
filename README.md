@@ -2,6 +2,17 @@
 
 This package aims to be a game agnostic word/name highlighter. There are several different packages I've seen for this but they are all geared towards a specific game or lacked much in the way of configurability.
 
+## Quick start
+
+To quickly see it in action, you can try the following commands from the Mudlet input line after installing the package
+`hl cat add enemy#bold = true`
+
+`hl item add enemy#Bob`
+
+```txt
+`echo Then to your dismay a wild Bob appeared!
+```
+
 ## Aliases
 
 All aliases start with `hl`. Some of them get a little bit expressive, but the [API](#API) section will show you how to write your own shorter aliases. Since category names and items to be highlights both can contain spaces, I settled on using `#` as a separator for my aliases. If you need to highlight something with a `#` in it then the [API](#API) can help you out.
