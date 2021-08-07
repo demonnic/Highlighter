@@ -1,0 +1,52 @@
+[
+  {
+    "name": "Control Highlight Items",
+    "regex": "^hl item (add|remove) (.+)"
+  },
+  {
+    "name": "Remove Category",
+    "regex": "^hl cat remove (.+)"
+  },
+  {
+    "name": "Clear Category",
+    "regex": "^hl cat clear (.+)"
+  },
+  {
+    "name": "Display Category",
+    "regex": "^hl cat display (.+)"
+  },
+  {
+    "name": "Add Category",
+    "regex": "^hl cat add (.+)"
+  },
+  {
+    "name": "List Categories",
+    "regex": "^hl cat list$"
+  },
+  {
+    "name": "Update Category",
+    "regex": "^hl cat update (.+)"
+  },
+  {
+    "name": "Usage",
+    "regex": "^hl( ?(help|usage)?)?$"
+  },
+  {
+    "name": "Pause",
+    "regex": "^hl ?pause( .*)?"
+  },
+  {
+    "name": "Unpause",
+    "regex": "^hl ?unpause( .*)?"
+  },
+  {
+    "name": "Save",
+    "regex": "^hl ?save$",
+    "script": "Highlighter:save()"
+  },
+  {
+    "name": "Load",
+    "regex": "^hl ?load$",
+    "script": "Highlighter:load()"
+  }
+]

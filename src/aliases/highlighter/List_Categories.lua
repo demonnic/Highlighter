@@ -1,0 +1,2 @@
+Highlighter:echo("The following categories have been configured. Use 'hl cat display <name>' to get details on a given category")
+Highlighter:echo(table.concat(table.keys(Highlighter.categories), ", "))

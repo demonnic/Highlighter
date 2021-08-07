@@ -1,0 +1,8 @@
+{
+  "package": "demonhighlighter",
+  "version": "1.0.0",
+  "author": "Demonnic",
+  "title": "Configurable, game agnostic name/word/phrase highlighter",
+  "icon": "highlighter.jpg",
+  "outputFile": true
+}
