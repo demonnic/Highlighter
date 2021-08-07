@@ -78,7 +78,7 @@ All aliases start with `hl`. Some of them get a little bit expressive, but the [
 
 There are several functions you can make use of yourself for creating aliases or triggers that interact with the Highlighter.
 
-* Highlighter:addCategory(name, options)
+* `Highlighter:addCategory(name, options)`
   * adds a category to the Highlighter
   * name must be a string, can contain spaces
   * options is a table of key/value options.
@@ -101,46 +101,46 @@ There are several functions you can make use of yourself for creating aliases or
       * paused
         * if true, items in this category will not actually be highlighted, but will still be tracked
         * defaults to false
-* Highlighter:add(item, category)
+* `Highlighter:add(item, category)`
   * adds an item to the Highlighter under category
   * to change categories for an item, just add it using the new category.
   * item must be a string, may contain spaces
   * category must be a string and an existing Highlighter category
-* Highlighter:removeCategory(name)
+* `Highlighter:removeCategory(name)`
   * removes the named category from the Highlighter
   * use with caution
-* Highlighter:pause(name)
+* `Highlighter:pause(name)`
   * pauses a specific category
-* Highlighter:pauseAll()
+* `Highlighter:pauseAll()`
   * pauses all categories
-* Highlighter:unpause(name)
+* `Highlighter:unpause(name)`
   * unpauses a specific category
-* Highlighter:unpauseAll()
+* `Highlighter:unpauseAll()`
   * unpauses all categories
-* Highlighter:remove(item)
+* `Highlighter:remove(item)`
   * removes the item from the Highlighter
   * Any given item can only be in one category, so that need not be specified
-* Highlighter:clearCategory(name)
+* `Highlighter:clearCategory(name)`
   * removes all items which belong to the named category
   * use with caution
-* Highlighter:clearAll(reallyReally)
+* `Highlighter:clearAll(reallyReally)`
   * removes all items from the Highlighter
   * reallyReally must be true, to show you really mean it
   * use with caution
   * really really
-* Highlighter:load(silent)
+* `Highlighter:load(silent)`
   * loads the configuration and items for the Highlighter from disk
   * if silent is true, then it will not echo to the main console
-* Highlighter:save(silent)
+* `Highlighter:save(silent)`
   * saves the configuration and items for the Highlighter to disk
   * if silent is true, then it will not echo to the main console
-* Highlighter:updateConfig(category, options)
+* `Highlighter:updateConfig(category, options)`
   * options is a table of options for the highlighter.
   * options are **updated** not **replaced** so any options you do not specify in the options table will remain whatever they were before the update.
   * `Highlighter:updateConfig("enemy", {fg = false, bg = "red", italics = true})`
     * set text bg to red but fg unchanged from however it came in
     * also make it italics
     * in addition to whatever bold/underline options are already set
-* Highlighter:updateConfig(category, option, value)
+* `Highlighter:updateConfig(category, option, value)`
   * updates one specific option for category
   * `Highlighter:updateConfig("friend", "bg", "purple")` would set the bg to purple for the friend category
