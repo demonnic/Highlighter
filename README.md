@@ -13,6 +13,8 @@ To quickly see it in action, you can try the following commands from the Mudlet 
 `echo Then to your dismay a wild Bob appeared!
 ```
 
+`hl item remove Bob` to clean up afterwards
+
 ## Aliases
 
 All aliases start with `hl`. Some of them get a little bit expressive, but the [API](#API) section will show you how to write your own shorter aliases. Since category names and items to be highlights both can contain spaces, I settled on using `#` as a separator for my aliases. If you need to highlight something with a `#` in it then the [API](#API) can help you out.
