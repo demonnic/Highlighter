@@ -5,15 +5,24 @@ This package aims to be a game agnostic word/name highlighter. There are several
 ## Quick start
 
 To quickly see it in action, you can try the following commands from the Mudlet input line after installing the package
-`hl cat add enemy#bold = true`
 
-`hl item add enemy#Bob`
+```txt
+hl cat add enemy#bold = true
+```
+
+```txt
+hl item add enemy#Bob
+```
 
 ```txt
 `echo Then to your dismay a wild Bob appeared!
 ```
 
-`hl item remove Bob` to clean up afterwards
+To clean up afterwards
+
+```txt
+hl item remove Bob
+```
 
 ## Aliases
 
