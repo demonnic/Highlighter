@@ -1,7 +1,3 @@
---- Parameterized word Highlighter
---- There are several versions of a namedb or name Highlighter floating about,
---- but they all seem to make assumptions about 
---@classmod Highlighter
 Highlighter = Highlighter or {
   categories = {},
   triggerIDs = {},
