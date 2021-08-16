@@ -166,3 +166,9 @@ There are several functions you can make use of yourself for creating aliases or
 * `Highlighter:updateConfig(category, option, value)`
   * updates one specific option for category
   * `Highlighter:updateConfig("friend", "bg", "purple")` would set the bg to purple for the friend category
+* `Highlighter:chighlight(text)`
+  * returns `text` but modified for any highlights it finds. cecho format
+* `Highlighter:dhighlight(text)`
+  * returns `text` but modified for any highlights it finds. decho format
+* `Highlighter:hhighlight(text)`
+  * returns `text` but modified for any highlights it finds. hecho format
