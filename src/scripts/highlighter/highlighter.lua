@@ -5,7 +5,7 @@ Highlighter = Highlighter or {
   items2category = {},
   header = "<0,255,255>(<255,255,0>Highlighter<0,255,255>)<r>:"
 }
-
+local selectString, setBold, setUnderline, setItalics, deselect, resetFormat, setFgColor, setBgColor = selectString, setBold, setUnderline, setItalics, deselect, resetFormat, setFgColor, setBgColor
 local savefile = getMudletHomeDir() .. "/demonhighlighter.lua"
 
 local defaultConfig = {
@@ -217,20 +217,178 @@ function Highlighter:createItemTrigger(item)
   self:removeItemTrigger(item)
   self.triggerIDs[item] = tempTrigger(item, function() self:highlight(item) end)
 end
+local function _color_name(rgb)
+  local least_distance = math.huge
+  local cname = ""
+  for name, color in pairs(color_table) do
+    local color_distance = math.sqrt((color[1] - rgb[1]) ^ 2 + (color[2] - rgb[2]) ^ 2 + (color[3] - rgb[3]) ^ 2)
+    if color_distance < least_distance then
+      least_distance = color_distance
+      cname = name
+    end
+  end
+  return cname
+end
+
+function Highlighter:dhighlight(text)
+  return self:echoFormat(text, "d")
+end
+
+function Highlighter:hhighlight(text)
+  return self:echoFormat(text, "h")
+end
+
+function Highlighter:chighlight(text)
+  return self:echoFormat(text, "c")
+end
+
+function Highlighter:echoFormat(text, fmt)
+  local patterns = {d = _Echos.Patterns.Decimal[1], c = _Echos.Patterns.Color[1], h = _Echos.Patterns.Hex[1]}
+  local exceptions = {"<i>", "</i>", "<b>", "</b>", "<u>", "</u>"}
+  local resetCodes = {d = "<r>", h = "#r", c = "<reset>"}
+  local parse = Geyser.Color.parse
+  local pattern = patterns[fmt]
+  local reset = resetCodes[fmt]
+  local result = ""
+  local lastColor = reset
+  local split = rex.split
+  for str, color, res in split(text, pattern) do
+    for cat, items in pairs(self.items) do
+      local config = self.categories[cat]
+      if not config.paused then
+        local bold = config.bold
+        local italics = config.italics
+        local underline = config.underline
+        local hl, hlcolor, fg, bg  = false, "", "", ""
+        if config.fg then
+          local r,g,b = parse(config.fg)
+          hl = true
+          if fmt == "d" then
+            fg = string.format("%d,%d,%d",r,g,b)
+          elseif fmt == "h" then
+            fg = string.format("%02x%02x%02x",r,g,b)
+          elseif fmt == "c" then
+            fg = _color_name({r,g,b})
+          end
+        end
+        if config.bg then
+          local r,g,b = parse(config.bg)
+          hl = true
+          if fmt == "d" then
+            bg = string.format(":%d,%d,%d",r,g,b)
+          elseif fmt == "h" then
+            bg = string.format(",%02x%02x%02x",r,g,b)
+          elseif fmt == "c" then
+            bg = ":" .. _color_name({r,g,b})
+          end
+        end
+        if hl then
+          if fmt == "d" or fmt == "c" then
+            hlcolor = string.format("<%s%s>", fg, bg)
+          elseif fmt == "h" then
+            hlcolor = string.format("#%s%s", fg, bg)
+          end
+        end
+        for name, _ in pairs(items) do
+          local pat = "%f[%a]"..name.."%f[%A]"
+          if str:find(pat) then
+            local transformed = name
+            if hl then
+              transformed = hlcolor .. transformed .. lastColor
+            end
+            if bold then
+              if fmt == "h" then
+                transformed = "#b" .. transformed .. "#/b"
+              else
+                transformed = "<b>" .. transformed .. "</b>"
+              end
+            end
+            if italics then
+              if fmt == "h" then
+                transformed = "#i" .. transformed .. "#/i"
+              else
+                transformed = "<i>" .. transformed .. "</i>"
+              end
+            end
+            if underline then
+              if fmt == "h" then
+                transformed = "#u" .. transformed .. "#/u"
+              else
+                transformed = "<u>" .. transformed .. "</u>"
+              end
+            end
+            str = str:gsub(pat, transformed)
+          end
+        end
+      end
+    end
+    result = result .. str
+    if color then
+      if not table.contains(exceptions, color) then
+        lastColor = color
+      end
+      result = result .. color
+    end
+    if res then
+      if res == "r" or res == "<reset>" then
+        lastColor = reset
+        result = result .. reset
+      elseif res == "b" then
+        if fmt == "d" or fmt == "c" then
+          result = result .. "<b>"
+        else
+          result = result .. "#b"
+        end
+      elseif res == "/b" then
+        if fmt == "d" or fmt == "c" then
+          result = result .. "</b>"
+        else
+          result = result .. "#/b"
+        end
+      elseif res == "i" then
+        if fmt == "d" or fmt == "c" then
+          result = result .. "<i>"
+        else
+          result = result .. "#i"
+        end
+      elseif res == "/i" then
+        if fmt == "d" or fmt == "c" then
+          result = result .. "</i>"
+        else
+          result = result .. "#/i"
+        end
+      elseif res == "u" then
+        if fmt == "d" or fmt == "c" then
+          result = result .. "<u>"
+        else
+          result = result .. "#u"
+        end
+      elseif res == "/u" then
+        if fmt == "d" or fmt == "c" then
+          result = result .. "</u>"
+        else
+          result = result .. "#/u"
+        end
+      end
+    end
+  end
+  return result
+end
 
 function Highlighter:highlight(item)
   local cat = self.items2category[item]
   local conf = self.categories[cat]
+  local parse = Geyser.Color.parse
   if conf.paused then
     return
   end
   local fg,bg = false,false
   if conf.fg then
-    local r,g,b = Geyser.Color.parse(conf.fg)
+    local r,g,b = parse(conf.fg)
     fg = {r,g,b}
   end
   if conf.bg then
-    local r,g,b = Geyser.Color.parse(conf.bg)
+    local r,g,b = parse(conf.bg)
     bg = {r,g,b}
   end
   -- following loop logic retained from another NDB designed for Lusternia originally, though I've adjusted the highlighting a bit
@@ -244,8 +402,8 @@ function Highlighter:highlight(item)
 
     if k == line:find("%f[%a]"..item.."%f[%A]", k) then
       if selectString(item, c-1) > -1 then
-        if fg        then setFgColor(unpack(fg)) end
-        if bg        then setBgColor(unpack(bg)) end
+        if fg then setFgColor(unpack(fg)) end
+        if bg then setBgColor(unpack(bg)) end
         setBold(conf.bold)
         setUnderline(conf.underline)
         setItalics(conf.italics)
