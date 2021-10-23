@@ -107,7 +107,7 @@ function Highlighter:removeRemoveMenuItem()
   if not self.removeMenuID then return end
   local menuItem = "Remove from Highlighter"
   local mouseEventName = "demonhighlighter" .. menuItem
-  addMouseEvent(menuItem)
+  removeMouseEvent(menuItem)
   killAnonymousEventHandler(self.removeMenuID)
   self.removeMenuID = nil
 end
