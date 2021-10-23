@@ -1,6 +1,7 @@
 Highlighter = Highlighter or {
   categories = {},
   triggerIDs = {},
+  mouseIDs = {},
   items = {},
   items2category = {},
   header = "<0,255,255>(<255,255,0>Highlighter<0,255,255>)<r>:"
@@ -41,6 +42,88 @@ function Highlighter:addCategory(categoryName, options)
   self.categories[categoryName] = config
   self.items[categoryName] = {}
   self:save(true)
+  self:addCategoryMenu(categoryName)
+end
+
+local function getSelectedText(window, startCol, startRow, endCol, endRow)
+  -- Check whether there's an actual selection
+  if startCol == endCol and startRow == endRow then return "" end
+  local parsed = ""
+  -- Loop through each symbol within the range
+  for lineNum = startRow, endRow do
+    local cStart = lineNum == startRow and startCol or 0
+    moveCursor(window, cStart, lineNum)
+    local cEnd = lineNum == endRow and endCol or #getCurrentLine() - 1
+    selectSection(window, cStart, cEnd - cStart + 1)
+    parsed = parsed .. (getSelection(window) or "")
+    if lineNum ~= endRow then parsed = parsed .. "\n" end
+  end
+  return parsed
+end
+
+function Highlighter:removeCategoryMenu(category)
+  local menuItem = "Highlight as '" .. category .. "'"
+  removeMouseEvent(menuItem)
+  local id = self.mouseIDs[category]
+  if id then
+    killAnonymousEventHandler(id)
+  end
+  self.mouseIDs[category] = nil
+end
+
+function Highlighter:addCategoryMenu(category)
+  self:removeCategoryMenu(category)
+  local menuItem = "Highlight as '" .. category .. "'"
+  local mouseEventName = "demonhighlighter" .. category
+  addMouseEvent(menuItem, mouseEventName)
+  local handler = function(event, menu, ...)
+    local text = getSelectedText(...)
+    if text == "" then return end
+    self:add(text, category)
+    self:echo("Added '" .. text .. "' to highlight category: " .. category)
+  end
+  self.mouseIDs[category] = registerAnonymousEventHandler(mouseEventName, handler)
+end
+
+function Highlighter:addRemoveMenuItem()
+  self:removeRemoveMenuItem()
+  local menuItem = "Remove from Highlighter"
+  local mouseEventName = "demonhighlighter" .. menuItem
+  addMouseEvent(menuItem, mouseEventName)
+  local handler = function(event, menu, ...)
+    local text = getSelectedText(...)
+    if text == "" then return end
+    if not Highlighter.items2category[text] then
+      self:echo("Text: '" .. text .. "' is not in the highlighter to remove")
+      return
+    end
+    self:remove(text)
+    self:echo("Removed '" .. text .. "' from the highlighter")
+  end
+  self.removeMenuID = registerAnonymousEventHandler(mouseEventName, handler)
+end
+
+function Highlighter:removeRemoveMenuItem()
+  if not self.removeMenuID then return end
+  local menuItem = "Remove from Highlighter"
+  local mouseEventName = "demonhighlighter" .. menuItem
+  addMouseEvent(menuItem)
+  killAnonymousEventHandler(self.removeMenuID)
+  self.removeMenuID = nil
+end
+
+function Highlighter:addAllMenuItems()
+  self:addRemoveMenuItem()
+  for category,_ in spairs(self.categories) do
+    self:addCategoryMenu(category)
+  end
+end
+
+function Highlighter:removeAllMenuItems()
+  self:removeRemoveMenuItem()
+  for category,_ in pairs(self.categories) do
+    self:removeCategoryMenu(category)
+  end
 end
 
 function Highlighter:add(item, categoryName)
@@ -65,6 +148,7 @@ function Highlighter:removeCategory(categoryName)
   self:clearCategory(categoryName)
   self.categories[categoryName] = nil
   self.items[categoryName] = nil
+  self:removeCategoryMenu(categoryName)
 end
 
 function Highlighter:pause(categoryName)
@@ -333,41 +417,11 @@ function Highlighter:echoFormat(text, fmt)
       if res == "r" or res == "<reset>" then
         lastColor = reset
         result = result .. reset
-      elseif res == "b" then
-        if fmt == "d" or fmt == "c" then
-          result = result .. "<b>"
+      else
+        if fmt == "h" then
+          result = result .. "#" .. res
         else
-          result = result .. "#b"
-        end
-      elseif res == "/b" then
-        if fmt == "d" or fmt == "c" then
-          result = result .. "</b>"
-        else
-          result = result .. "#/b"
-        end
-      elseif res == "i" then
-        if fmt == "d" or fmt == "c" then
-          result = result .. "<i>"
-        else
-          result = result .. "#i"
-        end
-      elseif res == "/i" then
-        if fmt == "d" or fmt == "c" then
-          result = result .. "</i>"
-        else
-          result = result .. "#/i"
-        end
-      elseif res == "u" then
-        if fmt == "d" or fmt == "c" then
-          result = result .. "<u>"
-        else
-          result = result .. "#u"
-        end
-      elseif res == "/u" then
-        if fmt == "d" or fmt == "c" then
-          result = result .. "</u>"
-        else
-          result = result .. "#/u"
+          result = result .. "<" .. res .. ">"
         end
       end
     end
@@ -462,12 +516,14 @@ function Highlighter:killEvents()
       killAnonymousEventHandler(id)
     end
   end
+  Highlighter.eventIDs = {}
 end
 
-Highlighter.eventIDs = {}
+Highlighter.eventIDs = Highlighter.eventIDs or {}
 local function loadFunc(event, name)
   if event == "sysLoadEvent" or name == "@PKGNAME@" then
     Highlighter:load()
+    Highlighter:addAllMenuItems()
   end
   if name == "@PKGNAME@" then
     Highlighter:echo("Highlighter installed, happy highlighting!")
@@ -480,6 +536,7 @@ local function saveFunc(event, name)
   elseif name == "@PKGNAME@" then
     Highlighter:save()
     Highlighter:removeAllTriggers()
+    Highlighter:removeAllMenuItems()
     Highlighter:killEvents()
     Highlighter:echo("Highlighter uninstalled, but your configs are safe in case you change your mind")
     Highlighter = nil
