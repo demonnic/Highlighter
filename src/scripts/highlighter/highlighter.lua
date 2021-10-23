@@ -86,7 +86,7 @@ function Highlighter:addCategoryMenu(category)
 end
 
 function Highlighter:addAllMenuItems()
-  for category,_ in pairs(self.categories) do
+  for category,_ in spairs(self.categories) do
     self:addCategoryMenu(category)
   end
 end
