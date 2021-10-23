@@ -45,7 +45,7 @@ function Highlighter:addCategory(categoryName, options)
   self:addCategoryMenu(categoryName)
 end
 
-local function getSelectedText(event, menu, window, startCol, startRow, endCol, endRow)
+local function getSelectedText(window, startCol, startRow, endCol, endRow)
   -- Check whether there's an actual selection
   if startCol == endCol and startRow == endRow then return "" end
   local parsed = ""
@@ -74,9 +74,9 @@ end
 function Highlighter:addCategoryMenu(category)
   self:removeCategoryMenu(category)
   local menuItem = "Highlight as '" .. category .. "'"
-  local mouseEventName = "demonhiglighter" .. category
+  local mouseEventName = "demonhighlighter" .. category
   addMouseEvent(menuItem, mouseEventName)
-  local handler = function(...)
+  local handler = function(event, menu, ...)
     local text = getSelectedText(...)
     if text == "" then return end
     self:add(text, category)
@@ -85,13 +85,42 @@ function Highlighter:addCategoryMenu(category)
   self.mouseIDs[category] = registerAnonymousEventHandler(mouseEventName, handler)
 end
 
+function Highlighter:addRemoveMenuItem()
+  self:removeRemoveMenuItem()
+  local menuItem = "Remove from Highlighter"
+  local mouseEventName = "demonhighlighter" .. menuItem
+  addMouseEvent(menuItem, mouseEventName)
+  local handler = function(event, menu, ...)
+    local text = getSelectedText(...)
+    if text == "" then return end
+    if not Highlighter.items2category[text] then
+      self:echo("Text: '" .. text .. "' is not in the highlighter to remove")
+      return
+    end
+    self:remove(text)
+    self:echo("Removed '" .. text .. "' from the highlighter")
+  end
+  self.removeMenuID = registerAnonymousEventHandler(mouseEventName, handler)
+end
+
+function Highlighter:removeRemoveMenuItem()
+  if not self.removeMenuID then return end
+  local menuItem = "Remove from Highlighter"
+  local mouseEventName = "demonhighlighter" .. menuItem
+  addMouseEvent(menuItem)
+  killAnonymousEventHandler(self.removeMenuID)
+  self.removeMenuID = nil
+end
+
 function Highlighter:addAllMenuItems()
+  self:addRemoveMenuItem()
   for category,_ in spairs(self.categories) do
     self:addCategoryMenu(category)
   end
 end
 
 function Highlighter:removeAllMenuItems()
+  self:removeRemoveMenuItem()
   for category,_ in pairs(self.categories) do
     self:removeCategoryMenu(category)
   end
