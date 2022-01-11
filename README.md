@@ -38,7 +38,7 @@ All aliases start with `hl`. Some of them get a little bit expressive, but the [
     * Available options
       * fg
         * the color to make the text. Can be specified as a color name ("red"), decho style ("<255,0,0>"), or hecho style ("#ff0000")
-        * defaults to "red", set to false if you want fg uncolored
+        * defaults to false (uncolored)
       * bg
         * the same as fg, but the background of the text.
         * defaults to false (uncolored)
@@ -107,7 +107,7 @@ There are several functions you can make use of yourself for creating aliases or
     * Available options
       * fg
         * the color to make the text. Can be specified as a color name ("red"), decho style ("<255,0,0>"), or hecho style ("#ff0000")
-        * defaults to "red", set to false if you want fg uncolored
+        * defaults to false (uncolored)
       * bg
         * the same as fg, but the background of the text.
         * defaults to false (uncolored)
