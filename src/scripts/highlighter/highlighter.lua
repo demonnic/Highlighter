@@ -10,7 +10,7 @@ local selectString, setBold, setUnderline, setItalics, deselect, resetFormat, se
 local savefile = getMudletHomeDir() .. "/demonhighlighter.lua"
 
 local defaultConfig = {
-  fg = "red",
+  fg = false,
   bg = false,
   paused = false,
   bold = false,
