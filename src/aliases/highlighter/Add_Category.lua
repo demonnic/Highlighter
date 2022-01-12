@@ -14,7 +14,7 @@ local name = catTbl[1]
 local success, options = pcall(loadstring("return { " .. catTbl[2] .. "}"))
 if success then
   Highlighter:addCategory(name, options)
-  Highlighter:echo("Added category {catTbl[1]}. Configuration table used displayed below")
+  Highlighter:echo(f"Added category {catTbl[1]}. Configuration table used displayed below")
   display(options)
 else
   Highlighter:echo(f"Error parsing configuration options {catTbl[2]}. Usage:")
