@@ -8,7 +8,8 @@ local msg = [[
     <0,255,255>*<r> `fg = "#ff0000", bold = true`
     <0,255,255>*<r> Available options
       <0,255,255>*<r> fg]]
-local cechomsg = [[        <cyan>*<reset> the color to make the text. Can be specified as a color name ("red"), decho style ("<255,0,0>"), or hecho style ("#ff0000")]]
+local cechomsg = [[        <cyan>*<reset> the color to make the text. Can be specified as a color name ("red"), decho style ("<255,0,0>"), or hecho style ("#ff0000")
+]]
 local msg2 = [[
         <0,255,255>*<r> defaults to false (uncolored)
       <0,255,255>*<r> bg

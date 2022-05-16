@@ -6,7 +6,7 @@ Highlighter = Highlighter or {
   items2category = {},
   header = "<0,255,255>(<255,255,0>Highlighter<0,255,255>)<r>:"
 }
-local selectString, setBold, setUnderline, setItalics, deselect, resetFormat, setFgColor, setBgColor = selectString, setBold, setUnderline, setItalics, deselect, resetFormat, setFgColor, setBgColor
+local selectString, setBold, setUnderline, setItalics, deselect, resetFormat, setFgColor, setBgColor, find, escape = selectString, setBold, setUnderline, setItalics, deselect, resetFormat, setFgColor, setBgColor, utf8.find, utf8.patternEscape
 local savefile = getMudletHomeDir() .. "/demonhighlighter.lua"
 
 local defaultConfig = {
@@ -432,6 +432,7 @@ end
 function Highlighter:highlight(item)
   local cat = self.items2category[item]
   local conf = self.categories[cat]
+  local escapedItem = escape(item)
   local parse = Geyser.Color.parse
   if conf.paused then
     return
@@ -450,11 +451,11 @@ function Highlighter:highlight(item)
   -- c counts the appearance of the substring of the word in the line, k counts the character position
   local c, k = 1, 1
   while k > 0 do
-    k = line:find(item, k)
+    k = find(line, item, k, true)
     if k == nil then return end
     c = c + 1
 
-    if k == line:find("%f[%a]"..item.."%f[%A]", k) then
+    if (item ~= escapedItem) or (k == find(line, "%f[%a]"..item.."%f[%A]", k)) then
       if selectString(item, c-1) > -1 then
         if fg then setFgColor(unpack(fg)) end
         if bg then setBgColor(unpack(bg)) end
